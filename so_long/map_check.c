@@ -6,104 +6,89 @@
 /*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 16:07:57 by fhosgor           #+#    #+#             */
-/*   Updated: 2024/01/08 18:07:13 by fhosgor          ###   ########.fr       */
+/*   Updated: 2024/01/09 19:12:57 by fhosgor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "so_long.h"
 #include <stdio.h>
 
-void	getmap(t_map *map)
-{
-	int		fd;
-	int		i;
-	int		j;
-	char	*str;
-
-	fd = open("map.ber", O_RDONLY);
-	str = get_next_line(fd);
-	i = 0;
-	while (str)
-	{
-		i++;
-		free (str);
-		str = get_next_line(fd);
-	}
-	map->map = malloc(sizeof(char *) * (i + 1));
-	map->mapy = i;
-	close (fd);
-	j = 0;
-	fd = open("map.ber", O_RDONLY);
-	while (j < i)
-	{
-		map->map[j] = get_next_line(fd);
-		j++;
-	}
-	map->mapx = ft_strlen(map->map[0]);
-}
-
-int	map_check1(t_map *map)
+void	ft_error(t_map *solong, char *str)
 {
 	int	i;
-	int	j;
 
 	i = 0;
-	while (map->map[i])
+	ft_printf("%s", str);
+	while (solong->map[i])
 	{
-		j = 0;
-		while (map->map[i][j])
+		if (solong->map[i] != NULL)
+			free (solong->map[i]);
+		i++;
+	}
+	if (solong->map)
+		free (solong->map);
+	system ("leaks a.out");
+	exit(1);
+}
+
+void	map_checker(t_map *solong)
+{
+	char	**map_check;
+	int		x;
+	int		y;
+
+	y = -1;
+	map_check = solong->map;
+	if (!solong->map[0])
+		ft_error(solong, "Map didn't creat!");
+	while (map_check[++y])
+	{
+		x = -1;
+		while (map_check[y][++x])
 		{
-			if (map->map[i][j] == '1' || map->map[i][j] == '0' ||
-			map->map[i][j] == 'P' || map->map[i][j] == 'C' ||
-			map->map[i][j] == 'E')
-				j++;
-			else
-				return (0);
+			if ((y == 0 || y == solong->mapy -1) && map_check[y][x] != '1')
+				ft_error(solong, "Edges of map isn't wall!");
+			else if ((x == 0 || x == solong->mapx -1) && map_check[y][x] != '1')
+				ft_error(solong, "Edges of map isn't wall!");
+			else if (!ft_strchar("10PEC", map_check[y][x]))
+				ft_error(solong, "Map has got invalied character!");
 		}
-		i++;
+		if (x != solong->mapx)
+			ft_error(solong, "Map isn't rectangle");
 	}
-	return (1);
 }
 
-int	map_check2(t_map *map)
+void	count_objects(t_map *solong)
 {
-	int	i;
-	int	j;
+	int	x;
+	int	y;
 
-	i = 0;
-	while (map->map[i])
+	y = -1;
+	solong->p_count = 0;
+	solong->c_count = 0;
+	solong->e_count = 0;
+	while (solong->map[++y])
 	{
-		j = 0;
-		while (map->map[i][j])
-			j++;
-		if (j != map->mapx)
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
-int	map_check3(t_map *map)
-{
-	int	i;
-	int	j;
-
-	i = 0;
-	j = 0;
-	while (i < map->mapy)
-	{
-		while (map->map[i][j])
+		x = -1;
+		while (solong->map[y][++x])
 		{
-			if (i == 0 || i == map->mapy - 1)
-				if (map->map[i][j] != '1')
-					return (0);
-			if (j == 0 || j == map->mapx - 1)
-				if (map->map[i][j] != '1')
-					return (0);
-			j++;
+			if (solong->map[y][x] == 'P')
+				solong->p_count += 1;
+			else if (solong->map[y][x] == 'E')
+				solong->e_count += 1;
+			else if (solong->map[y][x] == 'C')
+				solong->c_count += 1;
 		}
-		j = 0;
-		i++;
 	}
-	return (1);
+}
+
+void	check_objects(t_map *solong)
+{
+	count_objects(solong);
+	if (solong->p_count != 1)
+		ft_error(solong, "Invalied number of player!");
+	else if (solong->e_count != 1)
+		ft_error(solong, "Invalied number of exit!");
+	else if (solong->c_count < 1)
+		ft_error(solong, "Invalied number of coin!");
 }
