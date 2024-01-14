@@ -6,7 +6,7 @@
 /*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/08 16:07:57 by fhosgor           #+#    #+#             */
-/*   Updated: 2024/01/13 18:40:35 by fhosgor          ###   ########.fr       */
+/*   Updated: 2024/01/14 18:35:13 by fhosgor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,29 +37,6 @@ void	check_mapname(char *str)
 	}
 }
 
-void	ft_error(t_map *solong)
-{
-	int	i;
-
-	i = 0;
-	ft_printf("Map Error!");
-	while (solong->map[i])
-	{
-		if (solong->map[i] != NULL)
-		{
-			free (solong->map[i]);
-			free (solong->map_copy[i]);
-		}
-		i++;
-	}
-	if (solong->map)
-	{
-		free (solong->map);
-		free (solong->map_copy);
-	}
-	exit(1);
-}
-
 void	map_checker(t_map *solong)
 {
 	char	**map_check;
@@ -69,21 +46,21 @@ void	map_checker(t_map *solong)
 	y = -1;
 	map_check = solong->map;
 	if (!solong->map[0])
-		ft_error(solong);
+		ft_error(solong, 'm');
 	while (map_check[++y])
 	{
 		x = -1;
 		while (map_check[y][++x])
 		{
 			if ((y == 0 || y == solong->mapy -1) && map_check[y][x] != '1')
-				ft_error(solong);
+				ft_error(solong, 'm');
 			else if ((x == 0 || x == solong->mapx -1) && map_check[y][x] != '1')
-				ft_error(solong);
+				ft_error(solong, 'm');
 			else if (!ft_strchar("10PEC", map_check[y][x]))
-				ft_error(solong);
+				ft_error(solong, 'm');
 		}
 		if (x != solong->mapx)
-			ft_error(solong);
+			ft_error(solong, 'm');
 	}
 	check_objects(solong);
 }
@@ -121,10 +98,10 @@ void	check_objects(t_map *solong)
 {
 	count_objects(solong);
 	if (solong->p_count != 1)
-		ft_error(solong);
+		ft_error(solong, 'm');
 	else if (solong->e_count != 1)
-		ft_error(solong);
+		ft_error(solong, 'm');
 	else if (solong->c_count < 1)
-		ft_error(solong);
+		ft_error(solong, 'm');
 	flood_fill(solong);
 }

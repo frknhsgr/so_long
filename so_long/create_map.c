@@ -6,7 +6,7 @@
 /*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/09 18:10:28 by fhosgor           #+#    #+#             */
-/*   Updated: 2024/01/13 18:47:06 by fhosgor          ###   ########.fr       */
+/*   Updated: 2024/01/14 17:42:17 by fhosgor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,9 +70,9 @@ void	get_map(t_map *solong, char *mapname)
 	}
 	solong->map[i] = NULL;
 	close (fd);
-	get_map_copy(solong, mapname);
+	solong->map_name = mapname;
 	if (solong->mapx > 40 || solong->mapy > 22)
-		ft_error(solong);
+		ft_error(solong, 'm');
 	map_checker(solong);
 }
 

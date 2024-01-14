@@ -6,7 +6,7 @@
 /*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/12 15:50:45 by fhosgor           #+#    #+#             */
-/*   Updated: 2024/01/13 19:15:18 by fhosgor          ###   ########.fr       */
+/*   Updated: 2024/01/14 16:19:20 by fhosgor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,8 @@ void	print_map1(t_map *solong)
 	int	y;
 
 	y = -1;
+	if (solong->map[solong->exit_y][solong->exit_x] == '0')
+		solong->map[solong->exit_y][solong->exit_x] = 'E';
 	while (solong->map[++y])
 	{
 		x = -1;
@@ -79,15 +81,34 @@ void	print_map1(t_map *solong)
 	}
 }
 
-void	map_free(t_map *solong)
+void	check_texture(t_map *solong)
 {
-	int	i;
+	int	fd;
 
-	i = 0;
-	while (i < solong->mapy)
-	{
-		free (solong->map[i]);
-		i++;
-	}
-	free(solong->map);
+	fd = open("img/coin.xpm", O_RDONLY);
+	if (fd < 0)
+		ft_error(solong, 't');
+	fd = open("img/exit.xpm", O_RDONLY);
+	if (fd < 0)
+		ft_error(solong, 't');
+	fd = open("img/ground.xpm", O_RDONLY);
+	if (fd < 0)
+		ft_error(solong, 't');
+	fd = open("img/p_on_e.xpm", O_RDONLY);
+	if (fd < 0)
+		ft_error(solong, 't');
+	fd = open("img/player.xpm", O_RDONLY);
+	if (fd < 0)
+		ft_error(solong, 't');
+	fd = open("img/wall.xpm", O_RDONLY);
+	if (fd < 0)
+		ft_error(solong, 't');
+}
+
+void	ft_close(t_map *solong)
+{
+	ft_printf("Game Closed!");
+	map_free(solong);
+	mlx_destroy_window(solong->mlx, solong->win);
+	exit(1);
 }
